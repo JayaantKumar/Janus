@@ -1,45 +1,98 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import clsx from "clsx";
 
-const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const links = [
+    { name: "Industries", path: "/industries" },
+    { name: "About", path: "/about" },
+    { name: "Portfolio", path: "/portfolio" },
+    { name: "Resources", path: "/resources" },
+    { name: "Sustainability", path: "/sustainability" },
+  ];
 
   return (
-    <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-[#0f0f0f]/80 backdrop-blur-md border-b border-[#1f1f1f] py-4'
-          : 'bg-transparent border-b border-transparent py-6'
-      }`}
-    >
-      <div className="max-w-[1200px] mx-auto px-6 flex justify-between items-center">
-        <div className="text-xl font-medium tracking-tight text-white">
-          System<span className="text-gray-500">.</span>
-        </div>
-        <div className="hidden md:flex items-center space-x-8 text-sm text-gray-400">
-          {['Features', 'About', 'Services'].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
-              className="relative hover:text-white transition-colors duration-300 after:absolute after:-bottom-1 after:left-0 after:h-[1px] after:w-0 after:bg-white after:transition-all after:duration-300 hover:after:w-full"
-            >
-              {item}
-            </a>
-          ))}
-        </div>
-        <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-medium hover:scale-105 transition-transform duration-300">
-          Get Started
-        </button>
-      </div>
-    </nav>
-  );
-};
+    <>
+      {/* NAVBAR */}
+      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
+        <div
+          className="
+            flex items-center justify-between
+            px-8 py-4
+            rounded-full
+            backdrop-blur-xl
+            bg-white/5
+            border border-white/10
+            shadow-[0_8px_32px_rgba(0,0,0,0.37)]
+          "
+        >
+          <Link to="/" className="text-white font-semibold text-lg">
+            JANUS
+          </Link>
 
-export default Navbar;
+          {/* Desktop Links */}
+          <div className="hidden md:flex gap-8">
+            {links.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={clsx("transition", "text-white/70 hover:text-white")}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div className="hidden md:block">
+            <button className="bg-white/10 backdrop-blur-md px-6 py-2 rounded-full text-white hover:bg-white/20 transition">
+              Get in Touch
+            </button>
+          </div>
+
+          {/* Mobile Hamburger */}
+          <button
+            onClick={() => setOpen(!open)}
+            className="md:hidden text-white text-2xl"
+          >
+            ☰
+          </button>
+        </div>
+      </div>
+
+      {/* MOBILE MENU */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -40 }}
+            className="
+              fixed inset-0 bg-black z-40
+              flex flex-col items-center justify-center gap-10
+              text-3xl
+            "
+          >
+            {links.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                onClick={() => setOpen(false)}
+                className="text-white/70 hover:text-white"
+              >
+                {link.name}
+              </Link>
+            ))}
+
+            <button className="bg-white/10 px-6 py-3 rounded-full text-white">
+              Get in Touch
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
