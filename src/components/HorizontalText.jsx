@@ -7,16 +7,28 @@ export default function HorizontalText() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.to(textRef.current, {
-        xPercent: -50,
-        ease: "none",
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
+      const text = textRef.current;
+      const wrapper = text.parentElement;
+
+      const textWidth = text.scrollWidth;
+      const wrapperWidth = wrapper.offsetWidth;
+
+      const overflow = textWidth - wrapperWidth;
+
+      gsap.fromTo(
+        text,
+        { x: 0 },
+        {
+          x: -overflow,
+          ease: "none",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        }
+      );
     });
 
     return () => ctx.revert();
@@ -27,10 +39,12 @@ export default function HorizontalText() {
       ref={sectionRef}
       className="relative h-full flex items-center bg-black overflow-hidden"
     >
-      <h1 className="absolute text-[20vw] font-bold text-white/5 whitespace-nowrap pointer-events-none">
+      {/* Background Text */}
+      <h1 className="absolute left-0 text-[18vw] font-bold text-white/5 whitespace-nowrap pointer-events-none">
         OUR CORE OUR CORE OUR CORE
       </h1>
 
+      {/* Foreground Wrapper */}
       <div className="relative z-10 w-full overflow-hidden px-6">
         <h2
           ref={textRef}
