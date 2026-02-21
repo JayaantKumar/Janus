@@ -5,6 +5,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
@@ -18,9 +19,7 @@ import Sustainability from "./pages/Sustainability";
 
 import useSmoothScroll from "./hooks/useSmoothScroll";
 
-/* ---------------------------------- */
-/* Scroll To Top On Route Change     */
-/* ---------------------------------- */
+/* ---------------- Scroll To Top ---------------- */
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -31,16 +30,38 @@ function ScrollToTop() {
   return null;
 }
 
-/* ---------------------------------- */
-/* Main App Component                */
-/* ---------------------------------- */
+/* ---------------- Animated Routes ---------------- */
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -40 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Home />} />
+          <Route path="/industries" element={<Industries />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/sustainability" element={<Sustainability />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+/* ---------------- Main App ---------------- */
 function App() {
   const [loading, setLoading] = useState(true);
 
-  // Lenis smooth scroll
   useSmoothScroll();
 
-  // Loader timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
@@ -55,15 +76,7 @@ function App() {
     <Router>
       <ScrollToTop />
       <Navbar />
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/industries" element={<Industries />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/portfolio" element={<Portfolio />} />
-        <Route path="/resources" element={<Resources />} />
-        <Route path="/sustainability" element={<Sustainability />} />
-      </Routes>
+      <AnimatedRoutes />
     </Router>
   );
 }
