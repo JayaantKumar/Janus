@@ -1,16 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+// Notice we completely removed framer-motion here!
 import {
   Instagram,
   Facebook,
   Globe,
   BookOpen,
-  Calendar,
 } from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+
+  // Prevent scrolling when mobile menu is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [open]);
 
   const navLinks = [
     { name: "Industries We Serve", path: "/industries" },
@@ -55,7 +63,7 @@ export default function Navbar() {
           "
         >
           {/* Logo */}
-          <Link to="/" className="text-white font-semibold text-lg tracking-wide">
+          <Link to="/" onClick={() => setOpen(false)} className="text-white font-semibold text-lg tracking-wide z-50 relative">
             JANUS
           </Link>
 
@@ -80,8 +88,6 @@ export default function Navbar() {
 
           {/* Right Section (Social + CTA) */}
           <div className="hidden md:flex items-center gap-6">
-
-            {/* Social Icons */}
             <div className="flex gap-4">
               {socialLinks.map((social, index) => {
                 const Icon = social.icon;
@@ -99,95 +105,83 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Separate CTA */}
             <a
               href="https://aryangandhi-bearcatsolution.zohobookings.in/"
               target="_blank"
               rel="noopener noreferrer"
-              className="
-                px-5 py-2
-                rounded-full
-                bg-white text-black
-                font-medium
-                hover:bg-neutral-200
-                transition
-              "
+              className="px-5 py-2 rounded-full bg-white text-black font-medium hover:bg-neutral-200 transition"
             >
               Get in Touch
             </a>
           </div>
 
-          {/* Animated Hamburger */}
+          {/* Animated Hamburger (Using Tailwind instead of Framer Motion) */}
           <button
             onClick={() => setOpen(!open)}
-            className="md:hidden relative w-6 h-6 flex flex-col justify-between"
+            className="md:hidden relative z-50 w-6 h-5 flex flex-col justify-between cursor-pointer"
           >
-            <motion.span
-              animate={open ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-              className="block h-[2px] w-full bg-white origin-center"
+            <span
+              className={`block h-[2px] w-full bg-white transition-all duration-300 ease-in-out origin-center ${
+                open ? "rotate-45 translate-y-[9px]" : ""
+              }`}
             />
-            <motion.span
-              animate={open ? { opacity: 0 } : { opacity: 1 }}
-              className="block h-[2px] w-full bg-white"
+            <span
+              className={`block h-[2px] w-full bg-white transition-all duration-300 ease-in-out ${
+                open ? "opacity-0" : "opacity-100"
+              }`}
             />
-            <motion.span
-              animate={open ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-              className="block h-[2px] w-full bg-white origin-center"
+            <span
+              className={`block h-[2px] w-full bg-white transition-all duration-300 ease-in-out origin-center ${
+                open ? "-rotate-45 -translate-y-[9px]" : ""
+              }`}
             />
           </button>
         </div>
       </div>
 
-      {/* ================= MOBILE MENU ================= */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black z-40 flex flex-col items-center justify-center gap-8 text-2xl"
+      {/* ================= MOBILE MENU (Tailwind CSS Transitions) ================= */}
+      <div
+        className={`fixed inset-0 bg-black z-40 flex flex-col items-center justify-center gap-8 text-2xl transition-all duration-500 ease-in-out ${
+          open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        {navLinks.map((link) => (
+          <NavLink
+            key={link.name}
+            to={link.path}
+            onClick={() => setOpen(false)}
+            className="text-white/70 hover:text-white transition transform hover:scale-105"
           >
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.path}
-                onClick={() => setOpen(false)}
-                className="text-white/70 hover:text-white transition"
+            {link.name}
+          </NavLink>
+        ))}
+
+        <a
+          href="https://aryangandhi-bearcatsolution.zohobookings.in/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-6 px-6 py-3 rounded-full bg-white text-black text-lg font-medium"
+        >
+          Get in Touch
+        </a>
+
+        <div className="flex gap-6 mt-8">
+          {socialLinks.map((social, index) => {
+            const Icon = social.icon;
+            return (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white/60 hover:text-white transition"
               >
-                {link.name}
-              </NavLink>
-            ))}
-
-            {/* CTA in Mobile */}
-            <a
-              href="https://aryangandhi-bearcatsolution.zohobookings.in/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 px-6 py-3 rounded-full bg-white text-black text-lg"
-            >
-              Get in Touch
-            </a>
-
-            {/* Social Icons */}
-            <div className="flex gap-6 mt-8">
-              {socialLinks.map((social, index) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={index}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-white/60 hover:text-white transition"
-                  >
-                    <Icon size={22} />
-                  </a>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <Icon size={26} />
+              </a>
+            );
+          })}
+        </div>
+      </div>
     </>
   );
 }

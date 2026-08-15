@@ -5,12 +5,13 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+
+// Removed Framer Motion completely from imports
 
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
 
-import Home from "./sections/Home";
+import Home from "./pages/Home";
 import Industries from "./pages/Industries";
 import About from "./pages/About";
 import Portfolio from "./pages/Portfolio";
@@ -30,29 +31,21 @@ function ScrollToTop() {
   return null;
 }
 
-/* ---------------- Animated Routes ---------------- */
+/* ---------------- Standard Routes (No Framer Motion) ---------------- */
 function AnimatedRoutes() {
   const location = useLocation();
 
+  // We removed <AnimatePresence> and <motion.div> here. 
+  // It is now a clean, standard React Router setup.
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={location.pathname}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -40 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <Routes location={location}>
-          <Route path="/" element={<Home />} />
-          <Route path="/industries" element={<Industries />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/resources" element={<Resources />} />
-          <Route path="/sustainability" element={<Sustainability />} />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
+    <Routes location={location}>
+      <Route path="/" element={<Home />} />
+      <Route path="/industries" element={<Industries />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/portfolio" element={<Portfolio />} />
+      <Route path="/resources" element={<Resources />} />
+      <Route path="/sustainability" element={<Sustainability />} />
+    </Routes>
   );
 }
 
