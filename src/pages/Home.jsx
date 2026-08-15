@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
+import Stats from "../components/Stats";
 import About from "../components/About";
 import Services from "../components/Services";
 import Showcase from "../components/Showcase";
@@ -12,37 +13,44 @@ export default function Home() {
     <>
       <Navbar />
 
-      <div className="relative">
-
-        <section className="h-screen sticky top-0 bg-black">
+      <main className="relative bg-black">
+        {/* Layer 1 */}
+        <section className="h-screen sticky top-0 bg-black z-10">
           <Hero />
         </section>
 
-        <section className="h-screen sticky top-0 bg-black">
+        {/* Layer 2: The New Framer Component */}
+        <section className="h-screen sticky top-0 bg-black z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
+          <Stats />
+        </section>
+
+        {/* Layer 2 */}
+        <section className="h-screen sticky top-0 bg-black z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
           <About />
         </section>
 
-        <section className="h-screen sticky top-0 bg-black">
-          <Services />
-        </section>
+        
 
-        <section className="h-screen sticky top-0 bg-black">
+        {/* Layer 4 */}
+        <section className="h-screen sticky top-0 bg-black z-40 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
           <Showcase />
         </section>
 
-        <section className="h-screen sticky top-0 bg-black">
+        {/* Layer 5 */}
+        <section className="h-screen sticky top-0 bg-black z-50 shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
           <HorizontalText />
         </section>
 
-        <section className="h-screen sticky top-0 bg-black">
+        {/* Layer 6: Your awesome ScrollSphere! */}
+        <section className="h-screen sticky top-0 bg-black z-[60] shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
           <ScrollSphere />
         </section>
 
-        <section className="h-screen sticky top-0 bg-black">
+        {/* Layer 7: Footer */}
+        <section className="h-screen sticky top-0 bg-black z-[70] shadow-[0_-20px_50px_rgba(0,0,0,0.8)]">
           <Footer />
         </section>
-
-      </div>
+      </main>
     </>
   );
 }
