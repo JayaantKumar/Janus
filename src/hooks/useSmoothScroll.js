@@ -5,9 +5,8 @@ import { ScrollTrigger } from "../lib/gsap";
 export default function useSmoothScroll() {
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.01, // Slightly smoother glide
+      lerp: 0.1,
       smoothWheel: true,
-      wheelMultiplier: 0.9,
     });
 
     function raf(time) {
@@ -18,43 +17,95 @@ export default function useSmoothScroll() {
 
     requestAnimationFrame(raf);
 
-    // --- Section Snapping Logic ---
-    let isScrolling = false;
+    // --- Advanced Section Snapping ---
+    let isAnimating = false;
+    let touchStartY = 0;
 
     const handleWheel = (e) => {
-      // If already animating to a section, ignore extra wheel ticks
-      if (isScrolling) return;
+      // Lower threshold = triggers on a lighter scroll (adjust between 10 to 30)
+      const threshold = 12; 
+
+      if (Math.abs(e.deltaY) < threshold) return; // Ignore accidental micro-movements
+      
+      if (isAnimating) {
+        e.preventDefault();
+        return;
+      }
 
       const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
       const currentSectionIndex = Math.round(scrollPosition / windowHeight);
       
-      // Determine scroll direction (down vs up)
+      // Determine direction (down vs up)
       const direction = e.deltaY > 0 ? 1 : -1;
       const targetIndex = currentSectionIndex + direction;
 
-      // Ensure we don't scroll past the top or bottom of the page
-      const maxIndex = document.querySelectorAll("section").length - 1;
+      const sections = document.querySelectorAll("section");
+      const maxIndex = sections.length - 1;
+
       if (targetIndex < 0 || targetIndex > maxIndex) return;
 
-      e.preventDefault(); // Stop default free scroll
-      isScrolling = true;
+      e.preventDefault();
+      isAnimating = true;
 
-      // Smoothly snap to the target section using Lenis
+      // Smooth programmatic snap to the exact next section height
       lenis.scrollTo(targetIndex * windowHeight, {
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Luxurious exponential ease
+        duration: 0.1, // Adjust speed here: lower is faster, higher is slower
+        easing: (t) => 1 - Math.pow(2, -10 * t), // Exponential smooth snap easing
         onComplete: () => {
-          isScrolling = false;
+          // Cooldown period to let trackpad momentum die down before next snap
+          setTimeout(() => {
+            isAnimating = false;
+          }, 300);
         },
       });
     };
 
-    // Attach wheel listener to the window
+    // Mobile/Tablet Touch Swipe Support
+    const handleTouchStart = (e) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+      if (isAnimating) return;
+      const touchEndY = e.changedTouches[0].clientY;
+      const diff = touchStartY - touchEndY;
+
+      // Minimum swipe distance required to trigger a snap on mobile
+      if (Math.abs(diff) < 40) return; 
+
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const currentSectionIndex = Math.round(scrollPosition / windowHeight);
+
+      const direction = diff > 0 ? 1 : -1;
+      const targetIndex = currentSectionIndex + direction;
+
+      const sections = document.querySelectorAll("section");
+      const maxIndex = sections.length - 1;
+
+      if (targetIndex < 0 || targetIndex > maxIndex) return;
+
+      isAnimating = true;
+      lenis.scrollTo(targetIndex * windowHeight, {
+        duration: 0.9,
+        easing: (t) => 1 - Math.pow(2, -10 * t),
+        onComplete: () => {
+          setTimeout(() => {
+            isAnimating = false;
+          }, 300);
+        },
+      });
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
       lenis.destroy();
     };
   }, []);
