@@ -7,8 +7,16 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
   const containerRef = useRef(null);
+  const videoRef = useRef(null); // 1. Create a reference for the video
 
   useEffect(() => {
+    // 2. Force the video to play using Javascript to bypass React's autoPlay bug
+    if (videoRef.current) {
+      videoRef.current.play().catch(error => {
+        console.warn("Autoplay was prevented by the browser:", error);
+      });
+    }
+
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -20,8 +28,7 @@ const Hero = () => {
         }
       });
 
-      // Let's remove the 0% circle mask so the video is visible immediately!
-      // Instead, let's just make it fade out slightly as you scroll down.
+      // Fades the video out slightly as you scroll down
       tl.to(".hero-video", { 
         opacity: 0, 
         ease: "none" 
@@ -34,7 +41,14 @@ const Hero = () => {
   return (
     <div ref={containerRef} className="h-screen w-full relative bg-black flex items-center justify-center">
       <div className="hero-video absolute inset-0 w-full h-full overflow-hidden">
-        <video autoPlay loop muted playsInline className="w-full h-full object-cover">
+        <video 
+          ref={videoRef} // 3. Attach the ref to the video element
+          autoPlay 
+          loop 
+          muted 
+          playsInline 
+          className="w-full h-full object-cover"
+        >
           <source src="/videos/hero.mp4" type="video/mp4" />
         </video>
         {/* Dark overlay to make the white text pop */}
@@ -42,7 +56,7 @@ const Hero = () => {
       </div>
       
       <div className="relative z-10 text-center">
-         <h1 className="text-6xl font-bold uppercase tracking-tighter text-white">
+         <h1 className="text-6xl md:text-8xl font-bold uppercase tracking-tighter text-white">
            Elevate Your Packaging
          </h1>
       </div>

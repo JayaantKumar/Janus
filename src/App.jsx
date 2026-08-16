@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,45 +6,39 @@ import {
   useLocation,
 } from "react-router-dom";
 
-// Removed Framer Motion completely from imports
-
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
+import ScrollToTop from "./components/ScrollToTop"; // <-- Imported our dedicated component
 
 import Home from "./pages/Home";
 import Industries from "./pages/Industries";
 import About from "./pages/About";
 import Portfolio from "./pages/Portfolio";
-import Resources from "./pages/Resources";
+import Materials from "./pages/Materials";
 import Sustainability from "./pages/Sustainability";
+import OurServices from "./pages/OurServices";
+import Blogs from "./pages/Blogs";
+import Faq from "./pages/Faq";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 import useSmoothScroll from "./hooks/useSmoothScroll";
 
-/* ---------------- Scroll To Top ---------------- */
-function ScrollToTop() {
-  const { pathname } = useLocation();
-
-  useLayoutEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
-}
-
-/* ---------------- Standard Routes (No Framer Motion) ---------------- */
+/* ---------------- Standard Routes ---------------- */
 function AnimatedRoutes() {
   const location = useLocation();
 
-  // We removed <AnimatePresence> and <motion.div> here. 
-  // It is now a clean, standard React Router setup.
   return (
     <Routes location={location}>
       <Route path="/" element={<Home />} />
       <Route path="/industries" element={<Industries />} />
       <Route path="/about" element={<About />} />
       <Route path="/portfolio" element={<Portfolio />} />
-      <Route path="/resources" element={<Resources />} />
+      <Route path="/our-services" element={<OurServices />} />
+      <Route path="/materials" element={<Materials />} />
       <Route path="/sustainability" element={<Sustainability />} />
+      <Route path="/blogs" element={<Blogs />} />
+      <Route path="/faq" element={<Faq />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
     </Routes>
   );
 }
@@ -67,7 +61,7 @@ function App() {
 
   return (
     <Router>
-      <ScrollToTop />
+      <ScrollToTop /> {/* Handles resetting scroll position on every page change */}
       <Navbar />
       <AnimatedRoutes />
     </Router>

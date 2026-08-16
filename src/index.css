@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+/* Tailwind v4 Custom Theme Setup for the Client Marquee */
+@theme {
+  --animate-infinite-scroll: infinite-scroll 25s linear infinite;
+
+  @keyframes infinite-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+}
+
 :root {
   --color-primary: #000000;
   --color-secondary: #0f0f0f;
